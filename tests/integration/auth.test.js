@@ -76,7 +76,7 @@ describe('Auth routes', () => {
     });
   });
 
-  describe('POST /v1/auth/login', () => {
+  describe('POST /v1/authlogin', () => {
     test('should return 200 and login user if email and password match', async () => {
       await insertUsers([userOne]);
       const loginCredentials = {
@@ -84,7 +84,7 @@ describe('Auth routes', () => {
         password: userOne.password,
       };
 
-      const res = await request(app).post('/v1/auth/login').send(loginCredentials).expect(httpStatus.OK);
+      const res = await request(app).post('/v1/authlogin').send(loginCredentials).expect(httpStatus.OK);
 
       expect(res.body.user).toEqual({
         id: expect.anything(),
@@ -105,7 +105,7 @@ describe('Auth routes', () => {
         password: userOne.password,
       };
 
-      const res = await request(app).post('/v1/auth/login').send(loginCredentials).expect(httpStatus.UNAUTHORIZED);
+      const res = await request(app).post('/v1/authlogin').send(loginCredentials).expect(httpStatus.UNAUTHORIZED);
 
       expect(res.body).toEqual({ code: httpStatus.UNAUTHORIZED, message: 'Incorrect email or password' });
     });
@@ -117,7 +117,7 @@ describe('Auth routes', () => {
         password: 'wrongPassword1',
       };
 
-      const res = await request(app).post('/v1/auth/login').send(loginCredentials).expect(httpStatus.UNAUTHORIZED);
+      const res = await request(app).post('/v1/authlogin').send(loginCredentials).expect(httpStatus.UNAUTHORIZED);
 
       expect(res.body).toEqual({ code: httpStatus.UNAUTHORIZED, message: 'Incorrect email or password' });
     });

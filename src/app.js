@@ -14,9 +14,9 @@ const { jwtStrategy } = require('./config/passport');
 const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const adminRoutes = require('./routes/v1/admin.route');
-const { errorConverter, errorHandler } = require('./middlewares/error');
-const ApiError = require('./utils/ApiError');
-
+const frontendRoutes = require('./routes/v1/frontend.route');
+// const { errorConverter, errorHandler } = require('./middlewares/error');
+// const ApiError = require('./utils/ApiError');
 
 const app = express();
 
@@ -32,7 +32,11 @@ app.use(helmet());
 app.use(express.json());
 
 // parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 // sanitize request data
 app.use(xss());
@@ -54,11 +58,11 @@ if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
 
-
-
 // Access public folder from root
- 
-app.use('/public', express.static(path.join(__dirname, 'public')))
+app.use('/backend', express.static(path.join(__dirname, 'public/backend/')));
+app.use('/frontend', express.static(path.join(__dirname, 'public/frontend/')));
+app.use('/favicon.ico', express.static(path.join(__dirname, 'public/favicon.ico')));
+
 app.get('/layouts/', function (req, res) {
   res.render('view');
 });
@@ -66,37 +70,45 @@ app.get('/layouts/', function (req, res) {
 // For set layouts of html view
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
- 
-// backend layout
-app.get('/root', function (req, res,next) {
+
+// Backend Layout
+app.get('/root', function (req, res, next) {
   app.set('layout', 'backend/layout');
   next();
 });
 
+// Frontend Layout
+app.get('/', function (req, res, next) {
+  app.set('layout', 'frontend/layout');
+  next();
+});
 
 app.use(expressLayouts);
 
-
-// admin routes
+// Admin routes
 app.use('/root', adminRoutes);
-
 
 // v1 api routes
 app.use('/v1', routes);
 
+// FrontEnd routes
+app.use('/', frontendRoutes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-  if(httpStatus.NOT_FOUND){
-   res.render('backend/Auth/pages_404')
+  if (httpStatus.NOT_FOUND) {
+    res.render('auth/pages_404', {
+      layout: 'backend/layout',
+    });
   }
-  //next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  next();
+  // next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 
 // convert error to ApiError, if needed
- app.use(errorConverter);
+//  app.use(errorConverter);
 
 // handle error
- app.use(errorHandler);
+//  app.use(errorHandler);
 
 module.exports = app;

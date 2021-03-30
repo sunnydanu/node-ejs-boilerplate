@@ -65,14 +65,14 @@
                 <%- contentFor('FooterJs') %>
 
                  <!-- Session timeout js -->
-        <script src="/public/plugins/bootstrap-session-timeout/bootstrap-session-timeout.min.js"></script>
+        <script src="/backend/plugins/bootstrap-session-timeout/bootstrap-session-timeout.min.js"></script>
 
 
         <script>
            $.sessionTimeout({
                      keepAliveUrl: 'pages-blank',
                      logoutButton:'Logout',
-                     logoutUrl: 'pages-login',
+                     logoutUrl: 'login',
                      redirUrl: 'pages-lock-screen',
                      warnAfter: 3000,
                      redirAfter: 30000,
